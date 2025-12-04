@@ -31,7 +31,7 @@ This GitHub Action sends a Telegram notification whenever specified workflows fi
 ```yaml
 on:
   workflow_run:
-    workflows: ["Go Test"]
+    workflows: ["Go Test"] ##Change it for your Workflows
     types:
       - completed
 jobs:
