@@ -1,5 +1,5 @@
 name: Notify Me Through Telegram
-
+description: This GitHub Action sends a Telegram notification whenever specified workflows finish running in your repository. The notification includes the repository name, commit message, author, workflow name, and the workflow status (success or failure), helping you monitor your CI/CD results in real time.
 on:
   workflow_run:
     workflows: ["Example Name"] # Add all the workflows name to get notified when those are efinished
