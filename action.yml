@@ -1,0 +1,29 @@
+name: Notify Me
+
+on:
+  workflow_run:
+    workflows: ["Example Name"] # Add all the workflows name to get notified when those are efinished
+    types:
+      - completed
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram notification
+        run: |
+          TITLE="🔔 *${{ github.repository }}*"
+          COMMIT_MSG="${{ github.event.workflow_run.head_commit.message }}"
+          AUTHOR="${{ github.event.workflow_run.head_commit.author.name }}"
+          COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.workflow_run.head_commit.id }}"
+          WORKFLOW="${{ github.event.workflow_run.name }}"
+          STATUS=""
+          if [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
+            STATUS="✅ *Workflow:* ${WORKFLOW} _succeeded_"
+          else
+            STATUS="❎ *Workflow:* ${WORKFLOW} _failed_"
+          fi
+          MSG="${TITLE} *Commit:* [${COMMIT_MSG}](${COMMIT_URL}) *Author:* ${AUTHOR} ${STATUS}"
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d parse_mode=Markdown \
+            -d text="${MSG}"
