@@ -1,4 +1,4 @@
-name: Notify Me
+name: Notify Me Through Telegram
 
 on:
   workflow_run:
