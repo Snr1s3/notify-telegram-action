@@ -8,7 +8,7 @@ on:
     workflows: ["Example Name"] # Add all the workflows name to get notified when those are efinished
     types:
       - completed
-      
+
 jobs:
   notify:
     runs-on: ubuntu-latest
