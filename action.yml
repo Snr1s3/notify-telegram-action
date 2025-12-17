@@ -1,33 +1,22 @@
 name: Notify Me Through Telegram
-description: This GitHub Action sends a Telegram notification whenever specified workflows finish running in your repository. 
-icon: message-circle
-color: blue
+description: Send a Telegram message about a workflow run
+inputs:
+  telegram_token:
+    description: Telegram bot token
+    required: true
+  telegram_chat_id:
+    description: Telegram chat id
+    required: true
+  message:
+    description: Message text (Markdown)
+    required: true
 
-on:
-  workflow_run:
-    workflows: ["Example Name"] # Add all the workflows name to get notified when those are efinished
-    types:
-      - completed
-
-jobs:
-  notify:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send Telegram notification
-        run: |
-          TITLE="🔔 *${{ github.repository }}*"
-          COMMIT_MSG="${{ github.event.workflow_run.head_commit.message }}"
-          AUTHOR="${{ github.event.workflow_run.head_commit.author.name }}"
-          COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.workflow_run.head_commit.id }}"
-          WORKFLOW="${{ github.event.workflow_run.name }}"
-          STATUS=""
-          if [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
-            STATUS="✅ *Workflow:* ${WORKFLOW} _succeeded_"
-          else
-            STATUS="❎ *Workflow:* ${WORKFLOW} _failed_"
-          fi
-          MSG="${TITLE} *Commit:* [${COMMIT_MSG}](${COMMIT_URL}) *Author:* ${AUTHOR} ${STATUS}"
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-            -d parse_mode=Markdown \
-            -d text="${MSG}"
+runs:
+  using: composite
+  steps:
+    - shell: bash
+    - run: |
+        curl -s -X POST "https://api.telegram.org/bot${{ inputs.telegram_token }}/sendMessage" \
+          -d chat_id="${{ inputs.telegram_chat_id }}" \
+          -d parse_mode=Markdown \
+          -d text="${{ inputs.message }}"
