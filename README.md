@@ -62,29 +62,27 @@ Paste the **Action Definition** above into that file.
 This example listens for the completion of a workflow named **"Go Test"** and sends a Telegram message with relevant details.
 
 ```yaml
-name: Telegram Notification
+name: Notify Me
 
 on:
   workflow_run:
-    workflows: ["Go Test"] # Change to your workflow names
-    types:
-      - completed
+    workflows: ["Test and Build", "Deploy mdBook site to Pages"]
+    types: [completed]
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
       - name: Send Telegram notification
-        uses: ./.github/actions/notify-telegram
+        uses: Snr1s3/notify-telegram-action@v1.0.3
         with:
           telegram_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           telegram_chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
           message: |
             🔔 *${{ github.repository }}*
-            *Commit:* [${{ github.event.workflow_run.head_commit.message }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.workflow_run.head_commit.id }})
-            *Author:* ${{ github.event.workflow_run.head_commit.author.name }}
             *Workflow:* ${{ github.event.workflow_run.name }}
-            *Status:* ${{ github.event.workflow_run.conclusion == 'success' && '✅ Success' || '❌ Failure' }}
+            *Conclusion:* ${{ github.event.workflow_run.conclusion }}
+            *Run:* ${{ github.event.workflow_run.html_url }}
 ```
 
 ---
